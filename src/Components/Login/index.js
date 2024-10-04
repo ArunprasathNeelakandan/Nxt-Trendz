@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Cookies from 'js-cookie'
 import './index.css'
 
 const Login = (props) => {
@@ -22,8 +23,10 @@ const Login = (props) => {
         setErrorMsg(errorMsg)
       }
 
-    const onSubmitSuccess = () => {
+    const onSubmitSuccess = (jwt_token) => {
         const {history} = props
+
+        Cookies.set('jwt_token',jwt_token,{expires:1})        
         history.replace('/')
       }
     
@@ -39,7 +42,7 @@ const Login = (props) => {
         const response = await fetch(url,options)
         const data = await response.json()
         if (response.ok === true){
-            onSubmitSuccess()
+            onSubmitSuccess(data.jwt_token)
         }else {
             console.log(data)
             onSubmitFailure(data.error_msg)
