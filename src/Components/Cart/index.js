@@ -1,29 +1,46 @@
-import {Redirect} from 'react-router-dom'
-import Cookies from 'js-cookie'
+import CartContext from '../../Context'
 
 import Header from '../Header'
+import EmptyCartView from '../EmptyCartView'
+import CartListView from '../CartListView'
+import CartSummary from '../CartSummary'
 
 import './index.css'
 
-const Cart = () => {
-  const accessToken = Cookies.get('jwt_token')
+const Cart = () => (
+  <CartContext.Consumer>
+    {value => {
+      const {cartList, removeAllCartItems} = value
+      const showEmptyView = cartList.length === 0
+      const onClickRemoveAllBtn = () => {
+        removeAllCartItems()
+      }
 
-  if (accessToken === undefined) {
-    return <Redirect to="/login" />
-  }
-
-  return (
-    <>
-      <Header />
-      <div className="cart-container">
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/nxt-trendz-cart-img.png"
-          alt="cart"
-          className="cart-img"
-        />
-      </div>
-    </>
-  )
-}
+      return (
+        <>
+          <Header />
+          <div className="cart-container">
+            {showEmptyView ? (
+              <EmptyCartView />
+            ) : (
+              <div className="cart-content-container">
+                <h1 className="cart-heading">My Cart</h1>
+                <button
+                  type="button"
+                  className="remove-all-btn"
+                  onClick={onClickRemoveAllBtn}
+                >
+                  Remove All
+                </button>
+                <CartListView />
+                <CartSummary />
+              </div>
+            )}
+          </div>
+        </>
+      )
+    }}
+  </CartContext.Consumer>
+)
 
 export default Cart
